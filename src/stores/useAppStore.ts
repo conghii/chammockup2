@@ -135,13 +135,11 @@ export const useAppStore = create<AppState & AppActions>()(
           id: 'gemini',
           name: 'Google Gemini',
           apiKey: '',
-          model: 'gemini-2.5-flash-image',
+          model: 'gemini-1.5-flash',
           models: [
-            { value: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image', description: 'Cân bằng giữa tốc độ và chất lượng (Ít lỗi 429)' },
-            { value: 'gemini-3.1-flash-image-preview', label: 'Gemini 3.1 Flash Image', description: 'Mới nhất, tạo ảnh chất lượng cao' },
-            { value: 'gemini-3-pro-image-preview', label: 'Gemini 3 Pro Image', description: 'Chất lượng ảnh chuyên nghiệp' },
-            { value: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro', description: 'Tốt nhất cho phân tích văn bản/ảnh' },
-            { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', description: 'Nhanh nhất cho xử lý ngôn ngữ' },
+            { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', description: 'Cân bằng giữa tốc độ và chất lượng' },
+            { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', description: 'Mới nhất, tạo văn bản và mô phỏng ảnh' },
+            { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro', description: 'Chất lượng cao nhất cho phân tích' },
           ],
         },
         {

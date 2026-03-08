@@ -199,7 +199,7 @@ export async function analyzeShirtImageWithGemini(
   const mimeType = match?.[1] ?? 'image/jpeg';
   const base64Data = match?.[2] ?? imageBase64;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   const res = await fetch(url, {
     method: 'POST',
