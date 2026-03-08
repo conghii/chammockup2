@@ -12,6 +12,7 @@ export default function AuthButton() {
     const { user, setUser } = useAppStore();
 
     useEffect(() => {
+        if (!auth) return;
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
             if (firebaseUser) {
                 setUser({

@@ -12,10 +12,22 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your_api_key';
+
+// Initialize Firebase with safety guard
+let auth: any;
+let db: any;
+let storage: any;
+
+if (typeof window !== 'undefined' || isConfigValid) {
+    try {
+        const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        storage = getStorage(app);
+    } catch (error) {
+        console.error('Firebase initialization error:', error);
+    }
+}
 
 export { auth, db, storage };
