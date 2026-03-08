@@ -93,24 +93,26 @@ export function addPromptHistory(prompt: string) {
 const DEFAULT_SETTINGS: AppSettings = {
   providers: [
     {
+      id: 'gemini',
+      name: 'Google Gemini',
+      apiKey: '',
+      model: 'gemini-2.5-flash-image',
+      models: [
+        { value: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image', description: 'Balanced speed & quality (Lower 429 errors)' },
+        { value: 'gemini-3.1-flash-image-preview', label: 'Gemini 3.1 Flash Image', description: 'Latest model, high-quality image generation' },
+        { value: 'gemini-3-pro-image-preview', label: 'Gemini 3 Pro Image', description: 'Professional grade image quality' },
+        { value: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro', description: 'Best for text & image analysis' },
+        { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', description: 'Fastest for language processing' },
+      ],
+    },
+    {
       id: 'openai',
       name: 'OpenAI',
       apiKey: '',
       model: 'dall-e-3',
       models: [
-        { value: 'dall-e-3', label: 'DALL-E 3', description: 'Chất lượng cao nhất, hỗ trợ HD' },
-        { value: 'dall-e-2', label: 'DALL-E 2', description: 'Nhanh hơn, rẻ hơn' },
-      ],
-    },
-    {
-      id: 'gemini',
-      name: 'Google Gemini',
-      apiKey: '',
-      model: 'gemini-2.0-flash-preview-image-generation',
-      models: [
-        { value: 'gemini-2.0-flash-preview-image-generation', label: 'Gemini 2.0 Flash', description: 'Nhanh, rẻ, hỗ trợ tạo ảnh' },
-        { value: 'gemini-2.5-flash-preview-image-generation', label: 'Gemini 2.5 Flash', description: 'Chất lượng cao hơn 2.0' },
-        { value: 'gemini-2.5-pro-preview-image-generation', label: 'Gemini 2.5 Pro', description: 'Chất lượng tốt nhất từ Google' },
+        { value: 'dall-e-3', label: 'DALL-E 3', description: 'Highest quality, supports HD' },
+        { value: 'dall-e-2', label: 'DALL-E 2', description: 'Faster and cheaper' },
       ],
     },
     {
@@ -119,14 +121,14 @@ const DEFAULT_SETTINGS: AppSettings = {
       apiKey: '',
       model: 'V_2',
       models: [
-        { value: 'V_2', label: 'Ideogram v2', description: 'Tốt nhất cho text trên ảnh' },
-        { value: 'V_2_TURBO', label: 'Ideogram v2 Turbo', description: 'Nhanh hơn v2' },
-        { value: 'V_1', label: 'Ideogram v1', description: 'Phiên bản cổ điển' },
-        { value: 'V_1_TURBO', label: 'Ideogram v1 Turbo', description: 'Nhanh nhất, rẻ nhất' },
+        { value: 'V_2', label: 'Ideogram v2', description: 'Best for text in images' },
+        { value: 'V_2_TURBO', label: 'Ideogram v2 Turbo', description: 'Faster than v2' },
+        { value: 'V_1', label: 'Ideogram v1', description: 'Classic version' },
+        { value: 'V_1_TURBO', label: 'Ideogram v1 Turbo', description: 'Fastest and cheapest' },
       ],
     },
   ],
-  activeProvider: 'openai',
+  activeProvider: 'gemini',
   theme: 'system',
   defaultGarmentType: 'tshirt',
   defaultDisplayType: 'flat_lay',
@@ -134,10 +136,15 @@ const DEFAULT_SETTINGS: AppSettings = {
 
 export function getSettings(): AppSettings {
   const stored = safeGet<Partial<AppSettings>>(KEYS.SETTINGS, {});
-  // Merge stored providers with defaults so `models` array is always present
+  // Merge stored providers while prioritizing the NEW model lists from DEFAULT_SETTINGS
   const mergedProviders = DEFAULT_SETTINGS.providers.map((defaultProvider) => {
     const stored_ = (stored.providers ?? []).find((p) => p.id === defaultProvider.id);
-    return stored_ ? { ...defaultProvider, ...stored_, models: defaultProvider.models } : defaultProvider;
+    return stored_ ? {
+      ...defaultProvider,
+      ...stored_,
+      // Force the latest model definitions from code
+      models: defaultProvider.models
+    } : defaultProvider;
   });
   return {
     ...DEFAULT_SETTINGS,
