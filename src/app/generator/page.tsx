@@ -9,7 +9,7 @@ import DesignInput from '@/components/generator/DesignInput';
 import PromptPreview from '@/components/generator/PromptPreview';
 import ResultGrid from '@/components/generator/ResultGrid';
 import { cn } from '@/lib/utils';
-import { Wand2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wand2, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { AIProviderId } from '@/types';
 
 const PROVIDER_EMOJI: Record<AIProviderId, string> = {
@@ -119,45 +119,43 @@ function StepSection({
 }) {
   return (
     <div className={cn(
-      'rounded-2xl border-2 transition-all',
+      'rounded-2xl border-2 transition-all overflow-hidden',
       isOpen
-        ? 'border-violet-300 dark:border-violet-700 shadow-md'
+        ? 'border-violet-400 dark:border-violet-600 shadow-md bg-white dark:bg-gray-900'
         : isComplete
-          ? 'border-green-200 dark:border-green-800'
-          : 'border-gray-200 dark:border-gray-700'
+          ? 'border-green-200 dark:border-green-800 bg-gray-50/50 dark:bg-gray-800/30'
+          : 'border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/10'
     )}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-4 text-left"
+        className="w-full flex items-center justify-between px-4 py-3 text-left"
       >
         <div className="flex-1 min-w-0 pr-4">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">{emoji}</span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">{emoji}</span>
             <span className={cn(
-              'font-semibold truncate',
-              isOpen ? 'text-violet-700 dark:text-violet-300' : 'text-gray-900 dark:text-white'
+              'font-bold text-sm truncate',
+              isOpen ? 'text-violet-700 dark:text-violet-300' : 'text-gray-700 dark:text-gray-300'
             )}>{label}</span>
             {isComplete && !isOpen && (
-              <span className="px-2 py-0.5 text-[10px] rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-bold uppercase">
-                ✓
-              </span>
+              <Check className="w-3.5 h-3.5 text-green-500 font-bold" />
             )}
           </div>
           {isOpen && description && (
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 font-medium">
+            <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
               {description}
             </p>
           )}
         </div>
         {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
+          <ChevronUp className="w-4 h-4 text-gray-400" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+          <ChevronDown className="w-4 h-4 text-gray-400" />
         )}
       </button>
       {isOpen && (
-        <div className="px-5 pb-5">
-          <div className="h-px bg-gray-100 dark:bg-gray-800 mb-4" />
+        <div className="px-4 pb-4">
+          <div className="h-px bg-gray-100 dark:bg-gray-800 mb-3" />
           {children}
         </div>
       )}
@@ -252,24 +250,24 @@ export default function GeneratorPage() {
           <PromptPreview />
         </StepSection>
 
-        {/* Generate button */}
-        <div className="sticky bottom-0 pt-2 pb-4">
+        {/* Generate button container with background to prevent overlap */}
+        <div className="sticky bottom-0 -mx-4 px-4 pt-4 pb-6 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] z-10 transition-colors">
           <ProviderModelPicker />
           <button
             onClick={generate}
             disabled={!canGenerate || isGenerating}
             className={cn(
-              'w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all shadow-lg',
+              'w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-3 transition-all shadow-lg',
               canGenerate && !isGenerating
                 ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 hover:shadow-xl hover:-translate-y-0.5'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-100 dark:border-gray-800'
             )}
           >
             <Wand2 className={cn('w-5 h-5', isGenerating && 'animate-spin')} />
             {isGenerating ? 'Generating...' : canGenerate ? 'Generate Mockup ✨' : 'Select Season & Design to Generate'}
           </button>
           {!isSeasonDone && (
-            <p className="text-center text-xs text-gray-400 mt-2">
+            <p className="text-center text-[10px] text-gray-400 mt-3 font-medium">
               Start by selecting a season above
             </p>
           )}
