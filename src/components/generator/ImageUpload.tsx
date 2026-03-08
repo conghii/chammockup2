@@ -38,11 +38,11 @@ export default function ImageUpload() {
     async (file: File) => {
       setSizeError('');
       if (!ACCEPT.includes(file.type)) {
-        setSizeError('Chỉ chấp nhận PNG, JPG, WEBP, GIF');
+        setSizeError('Unsupported format. Please use PNG, JPG, WEBP, or GIF.');
         return;
       }
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-        setSizeError(`File quá lớn. Tối đa ${MAX_SIZE_MB}MB`);
+        setSizeError(`File too large. Maximum size is ${MAX_SIZE_MB}MB.`);
         return;
       }
       const base64 = await fileToBase64(file);
@@ -74,7 +74,6 @@ export default function ImageUpload() {
 
   const handleDragLeave = () => setIsDragging(false);
 
-  // Global paste handler
   const handlePaste = useCallback(
     (e: ClipboardEvent) => {
       const items = e.clipboardData?.items;
@@ -93,7 +92,6 @@ export default function ImageUpload() {
     [processFile]
   );
 
-  // Use passive paste listener when component is mounted
   useEffect(() => {
     window.addEventListener('paste', handlePaste);
     return () => window.removeEventListener('paste', handlePaste);
@@ -120,11 +118,14 @@ export default function ImageUpload() {
           </div>
           <div className="text-center">
             <p className="font-semibold text-sm text-gray-900 dark:text-white">
-              Upload hình ảnh áo của bạn
+              Upload your design
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Kéo thả hoặc click để chọn · PNG, JPG, WEBP · Tối đa {MAX_SIZE_MB}MB
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+              Drag & drop or click to select · Max {MAX_SIZE_MB}MB
             </p>
+          </div>
+          <div className="flex gap-4 text-[10px] text-gray-400 font-medium mt-1">
+            <p>💡 Tip: You can paste from clipboard (Ctrl+V)</p>
           </div>
           <input
             ref={fileInputRef}
@@ -153,17 +154,17 @@ export default function ImageUpload() {
                 <Upload className="w-6 h-6 text-violet-600" />
               </div>
               <p className="mt-2 text-xs font-bold text-violet-700 dark:text-violet-300 bg-white/90 dark:bg-gray-900/90 px-3 py-1 rounded-full shadow-sm">
-                Drop to replace image
+                Drop to replace design
               </p>
             </div>
           )}
-          {/* Preview */}
+
           <div className="flex gap-3 p-3">
             <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex-shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={config.uploadedImageBase64}
-                alt="Uploaded shirt"
+                alt="Uploaded design"
                 className="w-full h-full object-contain"
               />
             </div>
@@ -172,25 +173,24 @@ export default function ImageUpload() {
                 <div className="flex items-center gap-1.5">
                   <ImageIcon className="w-3.5 h-3.5 text-violet-500" />
                   <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                    Ảnh đã tải lên
+                    Active Design
                   </span>
                 </div>
                 <button
                   onClick={clearImageAnalysis}
                   className="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                  title="Xóa ảnh"
+                  title="Remove design"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              {/* Analysis result */}
               {hasAnalysis ? (
                 <div className="p-2 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <div className="flex items-center gap-1.5 mb-1">
                     <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
                     <span className="text-xs font-semibold text-green-700 dark:text-green-300">
-                      GPT-4o đã phân tích
+                      AI Analysis Complete
                     </span>
                   </div>
                   <p className="text-xs text-green-800 dark:text-green-200 leading-relaxed line-clamp-4">
@@ -211,12 +211,12 @@ export default function ImageUpload() {
                   {isAnalyzingImage ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Đang phân tích với GPT-4o...
+                      Analyzing design...
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4" />
-                      Phân tích ảnh với AI ✨
+                      Analyze with AI ✨
                     </>
                   )}
                 </button>
@@ -224,7 +224,6 @@ export default function ImageUpload() {
             </div>
           </div>
 
-          {/* Re-analyze button */}
           {hasAnalysis && (
             <div className="px-3 pb-3 flex gap-2">
               <button
@@ -233,14 +232,14 @@ export default function ImageUpload() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-violet-200 dark:border-violet-700 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors disabled:opacity-50"
               >
                 {isAnalyzingImage ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                Phân tích lại
+                Re-analyze
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 <Upload className="w-3 h-3" />
-                Đổi ảnh
+                Replace
               </button>
               <input
                 ref={fileInputRef}
@@ -269,7 +268,7 @@ export default function ImageUpload() {
         <div className="flex items-start gap-2 p-3 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800">
           <Sparkles className="w-3.5 h-3.5 text-violet-500 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-violet-700 dark:text-violet-300">
-            Mô tả từ AI đã được tích hợp vào prompt. Nhấn <strong>Generate Mockup</strong> để tạo mockup dựa trên ảnh áo của bạn.
+            Design details have been added to the prompt. Click <strong>Generate Mockup</strong> to create your image.
           </p>
         </div>
       )}

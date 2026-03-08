@@ -2,17 +2,17 @@ import { GeneratorConfig, DisplayType, GarmentType, DesignStyle } from '@/types'
 
 const DISPLAY_PROMPTS: Record<DisplayType, string> = {
   flat_lay:
-    'A professional flat lay product mockup photographed from above on a clean surface, styled with seasonal props',
+    'High-end commercial flat lay product photography, shot from directly above on a premium textured surface, professional arrangement with minimal seasonal props, soft diffused studio lighting',
   hanging:
-    'A professional hanging product mockup of a garment on a sleek hanger against a clean background',
+    'A professional product shot of a garment hanging on a minimalist wooden hanger against a neutral gallery wall, crisp details, natural side lighting, realistic fabric folds',
   folded:
-    'A professional neatly folded garment product mockup displayed on a clean flat surface',
+    'A clean, professional photo of a neatly folded garment on a boutique shelf, soft bokeh background, focus on the fabric texture and quality',
   model_wearing:
-    'A professional lifestyle product photo of a model wearing a',
+    'A high-fashion lifestyle photo of a professional model wearing a',
   ghost_mannequin:
-    'A professional ghost mannequin (invisible mannequin) product photo showing a',
+    'Premium ghost mannequin (invisible mannequin) e-commerce photography, perfectly shaped garment, 3D effect, clean white background, high-end studio lighting',
   lifestyle:
-    'A professional lifestyle scene product photo featuring a person wearing a',
+    'A candid, high-resolution lifestyle photograph featuring a person wearing a',
 };
 
 const GARMENT_LABELS: Record<GarmentType, string> = {
@@ -60,39 +60,39 @@ export function buildPrompt(config: GeneratorConfig): string {
   }
 
   if (uploadedImageBase64) {
-    prompt += ` Render a high-fidelity mockup by applying the design exactly as it appears onto the ${garmentLabel}, matching the shirt color perfectly from the source image. Do not change the colors or layout of the design.`;
+    prompt += ` Render a high-fidelity mockup by applying the design exactly as it appears onto the ${garmentLabel}. CRITICAL: You must match the garment color (shirt color) perfectly from the source image. Do not change the shirt color even if it contrasts with the seasonal theme.`;
     if (designText) {
       prompt += ` Verify the text "${designText}" is rendered exactly as shown in the reference.`;
     }
-    prompt += ` Context: ${season.name} season with ${keywords} atmosphere.`;
+    prompt += ` Environment Context: ${season.name} season with ${keywords} atmosphere. Only use the seasonal color palette (${colorPalette}) for background elements, lighting, and decorative props. The garment itself must remain exactly the color shown in the upload.`;
   } else if (designText) {
     prompt += ` with a ${styleLabel} design`;
     prompt += `. The design features the text "${designText}" in ${styleLabel} typography`;
     prompt += `, surrounded by ${season.name} elements like ${keywords}`;
+    prompt += `. Color palette: ${colorPalette}`;
   } else {
     prompt += ` with a ${styleLabel} ${season.name} themed design`;
     prompt += ` featuring ${keywords} elements`;
+    prompt += `. Color palette: ${colorPalette}`;
   }
 
-  prompt += `. Color palette: ${colorPalette}`;
-
   const seasonContext: Record<string, string> = {
-    halloween: 'The overall mood is spooky yet stylish, suitable for Halloween season merchandise',
-    christmas: 'The overall atmosphere is festive and warm, perfect for holiday gifting',
-    valentines: "The overall feel is romantic and heartfelt, ideal for Valentine's Day",
-    july4th: 'The overall theme is patriotic and celebratory, great for Independence Day',
-    thanksgiving: 'The overall mood is warm, grateful, and family-oriented for Thanksgiving',
-    summer: 'The overall feel is vibrant, fun, and beach-ready for summer',
-    fall: 'The overall mood is cozy, warm, and autumnal',
-    winter: 'The overall atmosphere is cool, minimal, and cozy for winter',
-    spring: 'The overall feel is fresh, blooming, and full of renewal energy',
+    halloween: 'The background scene is set in a realistic autumnal dusk, with glowing pumpkins and subtle spooky shadows in a modern home setting',
+    christmas: 'The background environment is warm and cozy, featuring a soft-focus Christmas tree with glowing fairy lights and a fireplace in the background',
+    valentines: 'The background is a romantic and elegant setting with soft pink lighting, fresh roses, and a clean premium aesthetic',
+    july4th: 'The background is a bright, sunny outdoor celebration with clear blue skies and tasteful patriotic decorations',
+    thanksgiving: 'The background is a warm, inviting dining area with natural wooden textures, dried autumn leaves, and golden hour lighting',
+    summer: 'The background is a vibrant outdoor scene with bright midday sun, tropical plant shadows, and a clear summer atmosphere',
+    fall: 'The background consists of a crisp autumn day with soft golden sunlight filtering through changing leaves, cozy and warm textures',
+    winter: 'The background is a bright winter morning with soft cool light, subtle frost details, and a clean minimalist interior',
+    spring: 'The background is a fresh morning setting with natural sunlight, blooming florals in soft focus, and an airy, bright atmosphere',
   };
 
   if (seasonContext[season.id]) {
     prompt += `. ${seasonContext[season.id]}`;
   }
 
-  prompt += '. Professional product photography, high resolution, e-commerce ready, clean and appealing composition.';
+  prompt += '. Ultra-photorealistic 8k UHD commercial fashion photography. Shot on Sony A7R IV, 35mm lens, f/2.8, soft natural lighting, sharp focus on fabric texture, high-end studio quality, clean and premium composition.';
 
   return prompt;
 }

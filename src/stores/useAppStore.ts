@@ -30,17 +30,11 @@ import {
 import { buildPrompt } from '@/lib/prompt-builder';
 import { generateWithOpenAI, generateWithGemini, generateWithIdeogram, analyzeShirtImageWithGemini } from '@/lib/ai-providers';
 import { generateId } from '@/lib/utils';
-import { uploadMockupImage, saveMockupToFirestore, getUserMockups, deleteUserMockup, toggleUserFavorite } from '@/lib/firebase-utils';
 
 interface AppState {
   customSeasons: Season[];
   allSeasons: Season[];
 
-  user: {
-    uid: string | null;
-    email: string | null;
-    photoURL: string | null;
-  };
   config: GeneratorConfig;
   composedPrompt: string;
 
@@ -90,7 +84,6 @@ interface AppActions {
   removeTemplate: (id: string) => void;
 
   updateSettings: (settings: AppSettings) => void;
-  setUser: (user: { uid: string | null; email: string | null; photoURL: string | null }) => void;
 
   setActiveNav: (nav: string) => void;
   toggleTheme: () => void;
@@ -113,11 +106,6 @@ export const useAppStore = create<AppState & AppActions>()(
   immer((set, get) => ({
     customSeasons: [],
     allSeasons: [...PRESET_SEASONS],
-    user: {
-      uid: null,
-      email: null,
-      photoURL: null,
-    },
     config: DEFAULT_CONFIG,
     composedPrompt: '',
     generatedMockups: [],
@@ -135,11 +123,13 @@ export const useAppStore = create<AppState & AppActions>()(
           id: 'gemini',
           name: 'Google Gemini',
           apiKey: '',
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash-image',
           models: [
-            { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', description: 'Cân bằng giữa tốc độ và chất lượng' },
-            { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', description: 'Mới nhất, tạo văn bản và mô phỏng ảnh' },
-            { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro', description: 'Chất lượng cao nhất cho phân tích' },
+            { value: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image', description: 'Balanced speed & quality (Lower 429 errors)' },
+            { value: 'gemini-3.1-flash-image-preview', label: 'Gemini 3.1 Flash Image', description: 'Latest model, high-quality image generation' },
+            { value: 'gemini-3-pro-image-preview', label: 'Gemini 3 Pro Image', description: 'Professional grade image quality' },
+            { value: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro', description: 'Best for text & image analysis' },
+            { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', description: 'Fastest for language processing' },
           ],
         },
         {
@@ -266,7 +256,7 @@ export const useAppStore = create<AppState & AppActions>()(
       const provider = settings.providers.find((p) => p.id === 'gemini');
       if (!provider?.apiKey) {
         set((s) => {
-          s.imageAnalysisError = 'Cần cấu hình Gemini API key trong Settings.';
+          s.imageAnalysisError = 'Gemini API key is required in Settings.';
         });
         return;
       }
@@ -286,7 +276,7 @@ export const useAppStore = create<AppState & AppActions>()(
           }
         });
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Phân tích ảnh thất bại';
+        const message = err instanceof Error ? err.message : 'Image analysis failed';
         set((s) => {
           s.isAnalyzingImage = false;
           s.imageAnalysisError = message;
@@ -349,23 +339,6 @@ export const useAppStore = create<AppState & AppActions>()(
           isFavorite: false,
         }));
 
-        // Cloud sync if user is logged in
-        const { user } = get();
-        if (user.uid) {
-          for (const mockup of newMockups) {
-            try {
-              // Optionally upload to storage if URL is base64 or if we want cloud persistence
-              // For now, these URLs are usually from AI providers (OpenAI/Gemini/Ideogram)
-              // They might expire, so we SHOULD upload them to our Firebase Storage.
-              const cloudUrl = await uploadMockupImage(user.uid, mockup.id, mockup.url);
-              mockup.url = cloudUrl;
-              await saveMockupToFirestore(user.uid, mockup);
-            } catch (syncErr) {
-              console.error('Failed to sync mockup to cloud:', syncErr);
-            }
-          }
-        }
-
         set((s) => {
           s.generatedMockups = newMockups;
           s.isGenerating = false;
@@ -391,40 +364,20 @@ export const useAppStore = create<AppState & AppActions>()(
     saveToGallery: (mockup) => {
       saveMockup(mockup);
       set((s) => { s.savedMockups = getMockups(); });
-
-      // Cloud sync if logged in
-      const { user } = get();
-      if (user.uid) {
-        saveMockupToFirestore(user.uid, mockup).catch(console.error);
-      }
     },
 
     removeFromGallery: (id) => {
-      const mockup = get().savedMockups.find(m => m.id === id);
       deleteMockup(id);
       set((s) => { s.savedMockups = s.savedMockups.filter((m) => m.id !== id); });
-
-      // Cloud delete if logged in
-      const { user } = get();
-      if (user.uid && mockup?.firebaseId) {
-        deleteUserMockup(user.uid, mockup.firebaseId).catch(console.error);
-      }
     },
 
     toggleFavorite: (id) => {
-      const mockup = get().savedMockups.find(m => m.id === id);
       toggleFavoriteMockup(id);
       set((s) => {
         s.savedMockups = s.savedMockups.map((m) =>
           m.id === id ? { ...m, isFavorite: !m.isFavorite } : m
         );
       });
-
-      // Cloud toggle if logged in
-      const { user } = get();
-      if (user.uid && mockup?.firebaseId) {
-        toggleUserFavorite(user.uid, mockup.firebaseId, !mockup.isFavorite).catch(console.error);
-      }
     },
 
     saveTemplate: (name, prompt) => {
@@ -446,20 +399,6 @@ export const useAppStore = create<AppState & AppActions>()(
     updateSettings: (settings) => {
       saveSettings(settings);
       set((s) => { s.settings = settings; });
-    },
-
-    setUser: (user) => {
-      set((s) => {
-        s.user = user;
-      });
-      // Load history when user changes
-      if (user.uid) {
-        getUserMockups(user.uid).then((mockups) => {
-          set((s) => {
-            s.savedMockups = [...getMockups(), ...mockups];
-          });
-        });
-      }
     },
 
     setActiveNav: (nav) => {

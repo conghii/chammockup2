@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ChamMockup ✨
 
-## Getting Started
+**AI-powered Seasonal Apparel Mockup Generator**
 
-First, run the development server:
+ChamMockup is a professional tool designed for Etsy and POD (Print-on-Demand) sellers to create high-fidelity, seasonal apparel mockups instantly. Leveraging Google's advanced Gemini AI models, it ensures your designs are preserved perfectly while automatically matching product colors and generating atmospheric backgrounds.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **High-Fidelity "Mockup Only" Mode**: Keep your original designs 100% intact without AI alterations.
+- **Automatic Color Matching**: Automatically detects and matches garment colors based on your uploaded design.
+- **Seasonal Intelligence**: Specialized contexts for Halloween, Christmas, Mother's Day, and more.
+- **Multiple Display Styles**: Choose between Models, Flat Lays, Hanging, or Ghost Mannequin displays.
+- **AI-Powered SEO**: Generates optimized Etsy tags and descriptions alongside your mockups.
+- **Fast Interactions**: Supports clipboard pasting (`Ctrl+V`) and drag-and-drop for design uploads.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework**: [Next.js 15+](https://nextjs.org) (App Router)
+- **Styling**: Tailwind CSS
+- **AI Models**: Google Gemini 2.0 Flash & Pro
+- **State Management**: Zustand
+- **Icons**: Lucide React
+- **UI Components**: Radix UI
 
-## Learn More
+## 📦 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Environment Setup**:
+    Add your API keys to the `.env` file or via the in-app Settings page.
+2.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Run Development Server**:
+    ```bash
+    npm run dev
+    ```
+4.  **Open the App**:
+    Navigate to [http://localhost:5713](http://localhost:5713) (or your configured port).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with ❤️ for the POD community.*

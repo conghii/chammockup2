@@ -70,7 +70,6 @@ export interface GeneratedMockup {
   seasonId: string;
   seasonName: string;
   isFavorite: boolean;
-  firebaseId?: string;
 }
 
 export type AIProviderId = 'openai' | 'gemini' | 'ideogram';

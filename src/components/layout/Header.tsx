@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
-import AuthButton from '../auth/AuthButton';
 import { Bell, Search } from 'lucide-react';
 
 const PAGE_TITLES: Record<string, { title: string; description: string }> = {
@@ -32,8 +31,6 @@ export default function Header() {
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-violet-500"></span>
         </button>
         <ThemeToggle />
-        <div className="w-px h-6 bg-gray-200 dark:bg-gray-800 mx-1" />
-        <AuthButton />
       </div>
     </header>
   );

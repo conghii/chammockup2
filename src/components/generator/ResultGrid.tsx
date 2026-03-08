@@ -105,13 +105,17 @@ function MockupCard({ mockup }: { mockup: GeneratedMockup }) {
               {/* Info Bar */}
               <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-                    {mockup.seasonName} Mockup
-                    <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider rounded-md bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 font-bold">
-                      {mockup.config.garmentType}
-                    </span>
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">{formatDate(mockup.createdAt)}</p>
+                  <Dialog.Title asChild>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                      {mockup.seasonName} Mockup
+                      <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider rounded-md bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 font-bold">
+                        {mockup.config.garmentType}
+                      </span>
+                    </h3>
+                  </Dialog.Title>
+                  <Dialog.Description asChild>
+                    <p className="text-sm text-gray-500 mt-1">{formatDate(mockup.createdAt)}</p>
+                  </Dialog.Description>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
