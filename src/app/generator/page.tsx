@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAppStore } from '@/stores/useAppStore';
 import SeasonPicker from '@/components/generator/SeasonPicker';
+import HobbyPicker from '@/components/generator/HobbyPicker';
 import GarmentPicker from '@/components/generator/GarmentPicker';
 import DisplayPicker from '@/components/generator/DisplayPicker';
 import DesignInput from '@/components/generator/DesignInput';
@@ -16,6 +17,7 @@ const PROVIDER_EMOJI: Record<AIProviderId, string> = {
   openai: '🤖',
   gemini: '✨',
   ideogram: '🎨',
+  midjourney: '🚢',
 };
 
 function ProviderModelPicker() {
@@ -172,9 +174,10 @@ export default function GeneratorPage() {
   const toggle = (id: string) => setOpenStep((prev) => (prev === id ? '' : id));
 
   const isSeasonDone = !!config.season;
+  const isHobbyDone = !!(config.hobbies && config.hobbies.length > 0);
   const isGarmentDone = !!config.garmentType;
   const isDisplayDone = !!config.displayType;
-  const isDesignDone = !!config.designText || !!config.customPrompt;
+  const isDesignDone = !!(config.designText || (config.uploadedImageBase64 && config.uploadedImageAnalysis));
   const isPromptDone = !!(config.useCustomPrompt ? config.customPrompt : composedPrompt);
 
   const canGenerate = isSeasonDone && (isDesignDone || isPromptDone);
@@ -207,20 +210,32 @@ export default function GeneratorPage() {
           </StepSection>
 
           <StepSection
+            id="hobby"
+            label="2. Select Hobby Niche"
+            emoji="🎯"
+            isOpen={openStep === 'hobby'}
+            onToggle={() => toggle('hobby')}
+            isComplete={isHobbyDone}
+            description="Optional: Combine your season with a specific hobby (e.g., Fishing, Yoga) for cross-niching."
+          >
+            <HobbyPicker />
+          </StepSection>
+
+          <StepSection
             id="garment"
-            label="2. Choose Garment"
+            label="3. Choose Garment"
             emoji="👕"
             isOpen={openStep === 'garment'}
             onToggle={() => toggle('garment')}
             isComplete={isGarmentDone}
-            description="Select your apparel type. If you upload a design in Step 4, AI will auto-detect the intended product color."
+            description="Select your apparel type. If you upload a design in Step 5, AI will auto-detect the intended product color."
           >
             <GarmentPicker />
           </StepSection>
 
           <StepSection
             id="display"
-            label="3. Display Style"
+            label="4. Display Style"
             emoji="📸"
             isOpen={openStep === 'display'}
             onToggle={() => toggle('display')}
@@ -232,7 +247,7 @@ export default function GeneratorPage() {
 
           <StepSection
             id="design"
-            label="4. Design Input"
+            label="5. Design Input"
             emoji="✏️"
             isOpen={openStep === 'design'}
             onToggle={() => toggle('design')}
@@ -244,7 +259,7 @@ export default function GeneratorPage() {
 
           <StepSection
             id="prompt"
-            label="5. Review Prompt"
+            label="6. Review Prompt"
             emoji="🤖"
             isOpen={openStep === 'prompt'}
             onToggle={() => toggle('prompt')}

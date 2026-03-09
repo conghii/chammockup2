@@ -14,16 +14,16 @@ const PROVIDER_META: Record<AIProviderId, { emoji: string; color: string; docsLa
     color: 'from-green-500 to-emerald-600',
     docsLabel: 'platform.openai.com',
     docsHint: 'API Keys → Create new secret key',
-    keyPrefix: '',
-    keyPlaceholder: 'key1, key2, key3...',
+    keyPrefix: 'sk-',
+    keyPlaceholder: 'sk-proj-... hoặc sk-...',
   },
   gemini: {
     emoji: '✨',
     color: 'from-blue-500 to-indigo-600',
     docsLabel: 'aistudio.google.com',
     docsHint: 'Get API key → Create API key',
-    keyPrefix: '',
-    keyPlaceholder: 'key1, key2, key3...',
+    keyPrefix: 'AIzaSy',
+    keyPlaceholder: 'AIzaSy...',
   },
   ideogram: {
     emoji: '🎨',
@@ -31,7 +31,15 @@ const PROVIDER_META: Record<AIProviderId, { emoji: string; color: string; docsLa
     docsLabel: 'ideogram.ai/api',
     docsHint: 'Account → API Keys → Generate',
     keyPrefix: '',
-    keyPlaceholder: 'key1, key2, key3...',
+    keyPlaceholder: 'Ideogram API key...',
+  },
+  midjourney: {
+    emoji: '🚢',
+    color: 'from-gray-700 to-gray-900',
+    docsLabel: 'imagineapi.dev',
+    docsHint: 'ImagineAPI → Dashboard → API Keys',
+    keyPrefix: '',
+    keyPlaceholder: 'ImagineAPI or compatible key...',
   },
 };
 
@@ -154,11 +162,8 @@ function ProviderCard({
               ⚠️ Key này không đúng format của {provider.name} (phải bắt đầu bằng <code className="font-mono">{meta.keyPrefix}</code>)
             </p>
           )}
-          <p className="text-[10px] text-violet-600 dark:text-violet-400 mt-1 font-medium">
-            💡 Pro Tip: Enter multiple keys separated by commas (,) for automatic rotation if quota is reached.
-          </p>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-            Get keys at <span className="text-violet-500 font-medium">{meta.docsLabel}</span>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            Lấy key tại <span className="text-violet-500 font-medium">{meta.docsLabel}</span>
           </p>
         </div>
 
@@ -354,7 +359,7 @@ export default function SettingsPage() {
           )}
         >
           {saved ? <CheckCircle className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-          {saved ? 'Saved!' : 'Save Settings'}
+          {saved ? 'Đã lưu!' : 'Lưu Settings'}
         </button>
         <button
           onClick={() => setLocalSettings(JSON.parse(JSON.stringify(settings)))}

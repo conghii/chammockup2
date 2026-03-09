@@ -59,6 +59,7 @@ export interface GeneratorConfig {
   useCustomPrompt: boolean;
   uploadedImageBase64?: string;
   uploadedImageAnalysis?: string;
+  hobbies?: string[];
 }
 
 export interface GeneratedMockup {
@@ -72,7 +73,7 @@ export interface GeneratedMockup {
   isFavorite: boolean;
 }
 
-export type AIProviderId = 'openai' | 'gemini' | 'ideogram';
+export type AIProviderId = 'openai' | 'gemini' | 'ideogram' | 'midjourney';
 
 export interface AIModelOption {
   value: string;

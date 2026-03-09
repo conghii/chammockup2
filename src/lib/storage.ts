@@ -127,6 +127,17 @@ const DEFAULT_SETTINGS: AppSettings = {
         { value: 'V_1_TURBO', label: 'Ideogram v1 Turbo', description: 'Fastest and cheapest' },
       ],
     },
+    {
+      id: 'midjourney',
+      name: 'Midjourney',
+      apiKey: '',
+      model: 'v6.1',
+      models: [
+        { value: 'v6.1', label: 'MJ v6.1', description: 'Latest ultra-realistic version' },
+        { value: 'v6.0', label: 'MJ v6.0', description: 'Highly detailed artistic style' },
+        { value: 'niji_6', label: 'Niji 6', description: 'Best for stylized or anime art' },
+      ],
+    },
   ],
   activeProvider: 'gemini',
   theme: 'system',

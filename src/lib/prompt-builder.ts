@@ -92,6 +92,12 @@ export function buildPrompt(config: GeneratorConfig): string {
     prompt += `. ${seasonContext[season.id]}`;
   }
 
+  // Hobby Cross-Niching Integration
+  if (config.hobbies && config.hobbies.length > 0) {
+    const hobbyStr = config.hobbies.join(' and ');
+    prompt += `. This design targets ${hobbyStr} enthusiasts. It dynamically combines ${season.name} elements with ${hobbyStr} themes and motifs. Ensure the atmosphere blends the ${season.name} mood with specific ${hobbyStr} lifestyle details.`;
+  }
+
   prompt += '. Ultra-photorealistic 8k UHD commercial fashion photography. Shot on Sony A7R IV, 35mm lens, f/2.8, soft natural lighting, sharp focus on fabric texture, high-end studio quality, clean and premium composition.';
 
   return prompt;
@@ -100,7 +106,7 @@ export function buildPrompt(config: GeneratorConfig): string {
 export function buildEtsyTags(config: GeneratorConfig): string[] {
   if (!config.season) return [];
 
-  const { season, garmentType, designStyle } = config;
+  const { season, garmentType, designStyle, hobbies } = config;
   const garmentLabel = GARMENT_LABELS[garmentType];
 
   const tags = [
@@ -115,6 +121,8 @@ export function buildEtsyTags(config: GeneratorConfig): string[] {
     'unisex shirt',
     'gift idea',
     'USA seller',
+    ...(hobbies || []).map(h => `${h.toLowerCase()} lover`),
+    ...(hobbies || []).map(h => `${h.toLowerCase()} gift`),
   ];
 
   if (config.designText) {

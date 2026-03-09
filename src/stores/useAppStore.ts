@@ -28,7 +28,7 @@ import {
   getPromptHistory,
 } from '@/lib/storage';
 import { buildPrompt } from '@/lib/prompt-builder';
-import { generateWithOpenAI, generateWithGemini, generateWithIdeogram, analyzeShirtImageWithGemini } from '@/lib/ai-providers';
+import { generateWithOpenAI, generateWithGemini, generateWithIdeogram, generateWithMidjourney, analyzeShirtImage, analyzeShirtImageWithGemini } from '@/lib/ai-providers';
 import { generateId } from '@/lib/utils';
 
 interface AppState {
@@ -66,6 +66,8 @@ interface AppActions {
   setDesignStyle: (style: DesignStyle) => void;
   setComposedPrompt: (prompt: string) => void;
   setVariationCount: (n: number) => void;
+  setHobbies: (hobbies: string[]) => void;
+  clearHobbies: () => void;
 
   // Image
   setUploadedImage: (base64: string | undefined) => void;
@@ -154,6 +156,17 @@ export const useAppStore = create<AppState & AppActions>()(
             { value: 'V_1_TURBO', label: 'Ideogram v1 Turbo', description: 'Nhanh nhất, rẻ nhất' },
           ],
         },
+        {
+          id: 'midjourney',
+          name: 'Midjourney',
+          apiKey: '',
+          model: 'v6.1',
+          models: [
+            { value: 'v6.1', label: 'MJ v6.1', description: 'Latest ultra-realistic version' },
+            { value: 'v6.0', label: 'MJ v6.0', description: 'Highly detailed artistic style' },
+            { value: 'niji_6', label: 'Niji 6', description: 'Best for stylized or anime art' },
+          ],
+        },
       ],
       activeProvider: 'gemini',
       theme: 'system',
@@ -236,6 +249,24 @@ export const useAppStore = create<AppState & AppActions>()(
       });
     },
 
+    setHobbies: (hobbies) => {
+      set((s) => {
+        s.config.hobbies = hobbies;
+        if (!s.config.useCustomPrompt) {
+          s.composedPrompt = buildPrompt(s.config);
+        }
+      });
+    },
+
+    clearHobbies: () => {
+      set((s) => {
+        s.config.hobbies = [];
+        if (!s.config.useCustomPrompt) {
+          s.composedPrompt = buildPrompt(s.config);
+        }
+      });
+    },
+
     // ---- Image upload & analysis ----
     setUploadedImage: (base64) => {
       set((s) => {
@@ -253,10 +284,12 @@ export const useAppStore = create<AppState & AppActions>()(
       const { config, settings } = get();
       if (!config.uploadedImageBase64) return;
 
-      const provider = settings.providers.find((p) => p.id === 'gemini');
+      const activeProviderId = settings.activeProvider;
+      const provider = settings.providers.find((p) => p.id === activeProviderId);
+
       if (!provider?.apiKey) {
         set((s) => {
-          s.imageAnalysisError = 'Gemini API key is required in Settings.';
+          s.imageAnalysisError = `API key for ${activeProviderId === 'openai' ? 'OpenAI' : 'Gemini'} is required in Settings.`;
         });
         return;
       }
@@ -267,7 +300,13 @@ export const useAppStore = create<AppState & AppActions>()(
       });
 
       try {
-        const analysis = await analyzeShirtImageWithGemini(provider.apiKey, config.uploadedImageBase64!);
+        let analysis = '';
+        if (activeProviderId === 'openai') {
+          analysis = await analyzeShirtImage(provider.apiKey, config.uploadedImageBase64!);
+        } else {
+          analysis = await analyzeShirtImageWithGemini(provider.apiKey, config.uploadedImageBase64!);
+        }
+
         set((s) => {
           s.config.uploadedImageAnalysis = analysis;
           s.isAnalyzingImage = false;
@@ -326,6 +365,8 @@ export const useAppStore = create<AppState & AppActions>()(
           urls = await generateWithGemini(provider.apiKey, prompt, variationCount, provider.model, config.uploadedImageBase64);
         } else if (settings.activeProvider === 'ideogram') {
           urls = await generateWithIdeogram(provider.apiKey, prompt, variationCount, provider.model);
+        } else if (settings.activeProvider === 'midjourney') {
+          urls = await generateWithMidjourney(provider.apiKey, prompt, variationCount, provider.model);
         }
 
         const newMockups: GeneratedMockup[] = urls.map((url) => ({
